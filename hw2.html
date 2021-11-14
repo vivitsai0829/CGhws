@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+<!-- overflow: hidden
+超過視窗size的部分不會檢視
+（可以消除旁邊的scrollBar）
+-->
+#info {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
+}
+
+body {
+  overflow: hidden;
+}
+
+</style>
+</head>
+
+<body>
+<div id='info'>
+	homework 2 
+</div>
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script>
+
+var camera, scene, renderer;
+var keyboard = new KeyboardState();
+var clock = new THREE.Clock();
+
+var car;
+var pos = new THREE.Vector3();
+var speed, angle, vel;
+
+var circle;
+
+(function() {
+  Math.clamp = function(val, min, max) {
+    return Math.min(Math.max(val, min), max);
+
+  }
+})();
+
+init();
+animate();
+
+//建立車子
+function buildcar() {
+  var car = new THREE.Object3D();
+  var mat = new THREE.MeshNormalMaterial();
+  var body = new THREE.Mesh(new THREE.BoxGeometry(20, 2, 20), mat);
+  car.add(body);
+  var pointer = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 2), mat);
+  car.add(pointer);
+  pointer.position.x = 15;
+  return car;
+}
+
+function init() {
+
+  clock = new THREE.Clock();
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.z = 250;
+  camera.position.y = 150;
+
+  //var gridXZ = new THREE.GridHelper(200, 20, 'red', 'white');
+  //scene.add(gridXZ);
+
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor('darkgray');
+
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  // does not matter
+  //controls.enableKeys = true;
+
+  document.body.appendChild(renderer.domElement);
+  ////////////////////////////////////////////////////////////////////////
+  speed = 0;
+  angle = 0.0;
+  
+  cylinder = new THREE.Mesh (new THREE.CylinderGeometry ( 10, 10, 10, 20 ), new THREE.MeshBasicMaterial({color:0xf8c7ff}));
+  scene.add (cylinder);
+  cylinder.rotation.y = -Math.PI/2; 
+  cylinder.position.set (20,0,10)
+
+	var plane = new THREE.Mesh( new THREE.PlaneGeometry( 200, 200 ), new THREE.MeshBasicMaterial( {color: 0xd4d4d4, side: THREE.DoubleSide} ) );
+	plane.rotation.x = Math.PI/2;
+	scene.add( plane );
+
+  car = buildcar();
+  scene.add(car)
+	
+}
+
+function update(dt) {
+
+  keyboard.update();
+  if (keyboard.pressed("left"))
+    angle += 0.01;
+  if (keyboard.pressed("right"))
+    angle -= 0.01;
+  if (keyboard.pressed("up"))
+    speed += 1;
+  if (keyboard.pressed("down"))
+    speed -= 1;
+
+  speed = Math.clamp(speed, 0.1, 20.0);
+  vel = new THREE.Vector3(speed, 0, 0);
+
+  vel.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+  pos.add(vel.clone().multiplyScalar(dt));
+}
+
+function animate() {
+
+  var dt = clock.getDelta();
+  update(dt);
+
+  // car update
+  car.position.copy(pos);
+  car.rotation.y = angle;
+  
+  /*let Rect = makeRect(rect);
+  if (Check_Intersect (Rect, cylinder, 10)) {
+  	cylinder.material.color = new THREE.Color ('red');
+  } else {
+  	cylinder.material.color = new THREE.Color ('white');  
+  }
+  */
+  requestAnimationFrame(animate);
+  
+  render();
+}
+
+function makeRect(rect) {
+		let Rect = {};
+    Rect.max = car.localToWorld ( new THREE.Vector3(10, 0, 5) );
+    Rect.min = car.localToWorld ( new THREE.Vector3(-10, 0, -5) );
+    Rect.px = car.localToWorld ( new THREE.Vector3(1,0,0)).sub (car.position);
+    return Rect;
+}	
+
+function render() {
+  renderer.render(scene, camera);
+}
+
+</script>
+</body>
+
+</html>
