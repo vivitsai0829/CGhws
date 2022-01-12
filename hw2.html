@@ -1,30 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>
+</title>
 <style>
-<!-- overflow: hidden
-超過視窗size的部分不會檢視
-（可以消除旁邊的scrollBar）
--->
-#info {
-  position: absolute;
-  top: 0px;
-  width: 100%;
-  padding: 10px;
-  text-align: center;
-  color: #ffff00
+#heading{
+	text-align: center;
+	position:absolute;
+	width:100vw;
 }
-
-body {
-  overflow: hidden;
-}
-
 </style>
 </head>
 
 <body>
-<div id='info'>
-	homework 2 
+<div id='heading'>
+	<h3 style = "color:red">homework4</h3>
 </div>
 <script src="https://threejs.org/build/three.min.js"></script>
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
@@ -95,6 +85,11 @@ function init() {
   scene.add (cylinder);
   cylinder.rotation.y = -Math.PI/2; 
   cylinder.position.set (20,0,10)
+  
+  cylinder = new THREE.Mesh (new THREE.CylinderGeometry ( 10, 10, 10, 20 ), new THREE.MeshBasicMaterial({color:0xf8c7ff}));
+  scene.add (cylinder);
+  cylinder.rotation.y = -Math.PI/2; 
+  cylinder.position.set (30,2,50)
 
 	var plane = new THREE.Mesh( new THREE.PlaneGeometry( 200, 200 ), new THREE.MeshBasicMaterial( {color: 0xd4d4d4, side: THREE.DoubleSide} ) );
 	plane.rotation.x = Math.PI/2;
